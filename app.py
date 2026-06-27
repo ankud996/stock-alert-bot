@@ -25,8 +25,13 @@ def send_telegram(msg):
 def check_setup(symbol):
    
     # NSE stock data (5 min)
-    df = yf.download(symbol + ".NS", interval="5m", period="2d")
-    print(df.tail())
+   df = yf.download(symbol + ".NS", interval="5m", period="2d")
+
+if df.empty:
+    send_telegram(f"No data for {symbol}")
+    return
+
+print(df.tail())
 
     # Indicators
     df['EMA9'] = EMAIndicator(df['Close'], 9).ema_indicator()
