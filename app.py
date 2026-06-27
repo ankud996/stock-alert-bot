@@ -7,7 +7,6 @@ from ta.momentum import RSIIndicator
 
 app = Flask(__name__)
 
-# Apna Telegram Bot Token aur Chat ID yahan daalo
 BOT_TOKEN = "8971900274:AAGZVWOioaCkAJ3DuM_RAYT-MgoRxu9vavM"
 CHAT_ID = "1249990076"
 
@@ -22,56 +21,56 @@ def send_telegram(msg):
 
     print(response.text)
 
+
 def check_setup(symbol):
-   
-    # NSE stock data (5 min)
-   df = yf.download(symbol + ".NS", interval="5m", period="2d")
+    df = yf.download(symbol + ".NS", interval="5m", period="2d")
 
-if df.empty:
-    send_telegram(f"No data for {symbol}")
-    return
+    if isinstance(df.columns, pd.MultiIndex):
+        df.columns = df.columns.get_level_values(0)
 
-print(df.tail())
+    if df.empty:
+        send_telegram(f"No data for {symbol}")
+        return
 
-# Indicators
-df['EMA9'] = EMAIndicator(df['Close'], 9).ema_indicator()
-df['EMA21'] = EMAIndicator(df['Close'], 21).ema_indicator()
-df['RSI'] = RSIIndicator(df['Close'], 14).rsi()
+    print(df.tail())
 
-    # VWAP
+    df['EMA9'] = EMAIndicator(df['Close'], 9).ema_indicator()
+    df['EMA21'] = EMAIndicator(df['Close'], 21).ema_indicator()
+    df['RSI'] = RSIIndicator(df['Close'], 14).rsi()
+
     df['VWAP'] = (
         (df['Volume'] * ((df['High'] + df['Low'] + df['Close']) / 3)).cumsum()
         / df['Volume'].cumsum()
     )
 
-    # Avg Volume
     df['AvgVol'] = df['Volume'].rolling(20).mean()
 
-    # First 15 min high (first 3 candles of 5m)
     first_15_high = df.iloc[:3]['High'].max()
 
     latest = df.iloc[-1]
 
-    # Setup conditions
     if (
         latest['Close'] > first_15_high and
         latest['EMA9'] > latest['VWAP'] and
         latest['RSI'] > 60 and
         latest['Volume'] > (latest['AvgVol'] * 1.5)
     ):
+
         msg = f"""🟢 VALID LONG SETUP
 
-{symbol}
+Stock: {symbol}
 
-Entry: {round(latest['Close'],2)}
-SL: {round(latest['EMA21'],2)}
-RSI: {round(latest['RSI'],2)}
+Entry: {round(latest['Close'], 2)}
+SL: {round(latest['EMA21'], 2)}
+RSI: {round(latest['RSI'], 2)}
 Volume: Strong
 """
+
     else:
         msg = f"🔴 {symbol} rejected"
 
     send_telegram(msg)
+
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
@@ -82,10 +81,11 @@ def webhook():
     print("Received symbol:", symbol)
 
     if symbol:
-        send_telegram(f"Webhook hit: {symbol}")   # test message
+        send_telegram(f"Webhook hit: {symbol}")
         check_setup(symbol)
 
     return {"status": "ok"}
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
