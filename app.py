@@ -75,5 +75,5 @@ def webhook():
 
     return {"status": "ok"}
 
-send_telegram("test succesful")
+send_telegram("f"Scanner Triggered 🚀\nStock: {symbol}"")
 app.run(host="0.0.0.0", port=5000)
