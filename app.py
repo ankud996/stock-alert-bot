@@ -14,10 +14,12 @@ CHAT_ID = "1249990076"
 
 def send_telegram(msg):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-    requests.post(url, data={
-        "chat_id": CHAT_ID,
-        "text": msg
-    })
+    response = requests.post(url, data={
+    "chat_id": CHAT_ID,
+    "text": msg
+})
+
+print(response.text)
 
 
 def check_setup(symbol):
