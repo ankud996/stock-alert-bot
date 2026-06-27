@@ -1,4 +1,5 @@
 from flask import Flask, request
+import os
 import yfinance as yf
 import pandas as pd
 import requests
@@ -7,7 +8,7 @@ from ta.momentum import RSIIndicator
 
 app = Flask(__name__)
 
-BOT_TOKEN = "8971900274:AAFMrOyWvG1JWL3OH6VUcdhaC-kQF8JgjCY"
+BOT_TOKEN = os.getenv("8971900274:AAETHxbNn6ppQMPdaeCjI0OvMQBNfJlddeM")
 CHAT_ID = "-1002632083710"
 
 def send_telegram(msg):
