@@ -71,7 +71,7 @@ def webhook():
     symbol = data.get("stock")
 
     if symbol:
-        send_telegram(f"🚀 Scanner Triggered\nStock: {symbol}")
+        check_setup(symbol)
 
     return {"status": "ok"}
 
