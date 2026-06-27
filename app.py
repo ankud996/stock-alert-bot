@@ -68,7 +68,7 @@ Volume: Strong
 @app.route('/webhook', methods=['POST'])
 def webhook():
     data = request.json
-    symbol = data.get("stock")
+    symbol = data.get("stocks")
 
     if symbol:
         check_setup(symbol)
