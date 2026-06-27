@@ -23,7 +23,13 @@ def send_telegram(msg):
 
 
 def check_setup(symbol):
-    df = yf.download(symbol + ".NS", interval="5m", period="2d")
+   df = yf.download(
+    tickers=symbol + ".NS",
+    interval="5m",
+    period="5d",
+    auto_adjust=False,
+    progress=False
+)
 
     if isinstance(df.columns, pd.MultiIndex):
         df.columns = df.columns.get_level_values(0)
