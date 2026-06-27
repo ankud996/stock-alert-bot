@@ -68,12 +68,11 @@ Volume: Strong
 @app.route('/webhook', methods=['POST'])
 def webhook():
     data = request.json
-    symbol = data.get("stocks")
+    symbol = data.get("stock")
 
     if symbol:
-        check_setup(symbol)
+        send_telegram(f"🚀 Scanner Triggered\nStock: {symbol}")
 
     return {"status": "ok"}
 
-send_telegram(f"🚀 Scanner Triggered\nStock: {symbol}")
 app.run(host="0.0.0.0", port=5000)
