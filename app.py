@@ -64,7 +64,6 @@ Volume: Strong
 
     send_telegram(msg)
 
-
 @app.route('/webhook', methods=['POST'])
 def webhook():
     data = request.json
