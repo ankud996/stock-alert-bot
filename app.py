@@ -7,7 +7,7 @@ from ta.momentum import RSIIndicator
 
 app = Flask(__name__)
 
-BOT_TOKEN = "8971900274:AAGZVWOioaCkAJ3DuM_RAYT-MgoRxu9vavM"
+BOT_TOKEN = "8971900274:AAEmED9Kw9YiaH82A1GplPexY3lfxBPy43c"
 CHAT_ID = "-1002632083710"
 
 def send_telegram(msg):
