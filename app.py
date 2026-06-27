@@ -33,10 +33,10 @@ if df.empty:
 
 print(df.tail())
 
-    # Indicators
-    df['EMA9'] = EMAIndicator(df['Close'], 9).ema_indicator()
-    df['EMA21'] = EMAIndicator(df['Close'], 21).ema_indicator()
-    df['RSI'] = RSIIndicator(df['Close'], 14).rsi()
+# Indicators
+df['EMA9'] = EMAIndicator(df['Close'], 9).ema_indicator()
+df['EMA21'] = EMAIndicator(df['Close'], 21).ema_indicator()
+df['RSI'] = RSIIndicator(df['Close'], 14).rsi()
 
     # VWAP
     df['VWAP'] = (
