@@ -35,6 +35,8 @@ def webhook():
     data = request.get_json(force=True)
     print("Incoming:", data)
 
+    send_telegram("Webhook reached")
+
     symbol = data.get("stock")
 
     if symbol:
@@ -42,7 +44,6 @@ def webhook():
         check_setup(symbol)
 
     return {"status": "ok"}
-
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
