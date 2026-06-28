@@ -93,13 +93,17 @@ def webhook():
     symbol = data.get("stock") or data.get("stocks") or data.get("symbol")
 
     if symbol:
-        send_telegram(f"Stock received: {symbol}")   # PEHLE ye
+        send_telegram(f"Stock received: {symbol}")
+
         try:
-            check_setup(symbol)                      # baad me analysis
+            check_setup(symbol)
         except Exception as e:
             send_telegram(f"Check failed: {str(e)}")
 
-    return {"status":"ok"}
+    else:
+        send_telegram("No symbol found")
+
+    return {"status": "ok"}
     except Exception as e:
         print("WEBHOOK ERROR:", str(e))
         send_telegram("Webhook error: " + str(e))
