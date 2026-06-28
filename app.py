@@ -31,10 +31,17 @@ def check_setup(symbol):
     return
        
 @app.route("/webhook", methods=["POST"])
-@app.route("/webhook", methods=["POST"])
 def webhook():
-    data = request.json
+    data = request.get_json(force=True)
     print("Incoming:", data)
-    send_telegram(str(data))
+
+    send_telegram(f"RAW DATA: {data}")
+
+    symbol = data.get("stocks")   # important
+
+    if symbol:
+        send_telegram(f"Stock received: {symbol}")
+
+    return {"status": "ok"}
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
