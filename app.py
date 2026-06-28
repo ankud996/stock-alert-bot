@@ -22,9 +22,10 @@ def send_telegram(msg):
 
 def check_setup(symbol):
     try:
+        time:sleep(2)
         df = yf.download(
             tickers=symbol + ".NS",
-            interval="5m",
+            interval="15m",
             period="5d",
             auto_adjust=False,
             progress=False
