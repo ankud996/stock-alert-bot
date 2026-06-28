@@ -89,21 +89,19 @@ Volume: Strong
 @app.route("/webhook", methods=["POST"])
 def webhook():
     data = request.json
+    print("Incoming:", data)
 
-    print("Incoming data:", data)
-    send_telegram("Payload: " + str(data))
+    send_telegram("Payload received")
 
     symbol = data.get("stock") or data.get("stocks") or data.get("symbol")
 
     if symbol:
         send_telegram(f"Webhook hit: {symbol}")
-    
+        check_setup(symbol)
     else:
-        send_telegram("No symbol found in payload")
+        send_telegram("No symbol found")
 
     return {"status": "ok"}
-
-
 @app.route("/")
 def home():
      return "NEW VERSION LIVE"
