@@ -104,10 +104,7 @@ def webhook():
         send_telegram("No symbol found")
 
     return {"status": "ok"}
-    except Exception as e:
-        print("WEBHOOK ERROR:", str(e))
-        send_telegram("Webhook error: " + str(e))
-        return {"error": str(e)}
+    
 
 
 if __name__ == "__main__":
