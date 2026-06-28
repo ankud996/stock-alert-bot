@@ -18,7 +18,7 @@ def send_telegram(msg):
         "text": msg
     })
     print(response.text)
-
+    print("Telegram API response:", response.text)
 
 def check_setup(symbol):
     try:
