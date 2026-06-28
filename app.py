@@ -27,57 +27,7 @@ def check_setup(symbol):
     print("CHECK_SETUP HIT:", symbol)
     send_telegram(f"Direct test: {symbol}")
     return
-        if df.empty:
-            send_telegram(f"No data for {symbol}")
-            return
-
-        if isinstance(df.columns, pd.MultiIndex):
-            df.columns = df.columns.get_level_values(0)
-
-        df["EMA9"] = EMAIndicator(df["Close"], 9).ema_indicator()
-        df["EMA21"] = EMAIndicator(df["Close"], 21).ema_indicator()
-        df["RSI"] = RSIIndicator(df["Close"], 14).rsi()
-
-        df["VWAP"] = (
-            (df["Volume"] * ((df["High"] + df["Low"] + df["Close"]) / 3)).cumsum()
-            / df["Volume"].cumsum()
-        )
-
-        df["AvgVol"] = df["Volume"].rolling(20).mean()
-
-        if len(df) < 3:
-            send_telegram(f"Not enough candles for {symbol}")
-            return
-
-        first_15_high = df.iloc[:3]["High"].max()
-        latest = df.iloc[-1]
-
-        if (
-            latest["Close"] > first_15_high
-            and latest["EMA9"] > latest["VWAP"]
-            and latest["RSI"] > 60
-            and latest["Volume"] > (latest["AvgVol"] * 1.5)
-        ):
-
-            msg = f"""
-🟢 VALID LONG SETUP
-
-{symbol}
-
-Entry: {round(latest['Close'],2)}
-SL: {round(latest['EMA21'],2)}
-RSI: {round(latest['RSI'],2)}
-Volume: Strong
-"""
-        else:
-            msg = f"🔴 {symbol} rejected"
-
-        send_telegram(msg)
-
-    except Exception as e:
-        send_telegram(f"Error in {symbol}: {str(e)}")
-
-
+       
 @app.route("/webhook", methods=["POST"])
 def webhook():
     data = request.json
