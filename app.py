@@ -24,7 +24,6 @@ def send_telegram(msg):
     print("BODY:", response.text)
 
   
-
 def check_setup(symbol):
     print("CHECK_SETUP HIT:", symbol)
     send_telegram(f"Ankita: {symbol}")
