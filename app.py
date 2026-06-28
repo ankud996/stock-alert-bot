@@ -87,23 +87,19 @@ Volume: Strong
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
-    try:
-        data = request.get_json(force=True)
+    data = request.json
+    print("Incoming:", data)
 
-        print("Incoming:", data)
+    symbol = data.get("stock") or data.get("stocks") or data.get("symbol")
 
-        send_telegram("Payload received")
+    if symbol:
+        send_telegram(f"Stock received: {symbol}")   # PEHLE ye
+        try:
+            check_setup(symbol)                      # baad me analysis
+        except Exception as e:
+            send_telegram(f"Check failed: {str(e)}")
 
-        symbol = data.get("stock") or data.get("stocks") or data.get("symbol")
-
-        if symbol:
-            send_telegram(f"Webhook hit: {symbol}")
-            check_setup(symbol)
-        else:
-            send_telegram("No symbol found")
-
-        return {"status": "ok"}
-
+    return {"status":"ok"}
     except Exception as e:
         print("WEBHOOK ERROR:", str(e))
         send_telegram("Webhook error: " + str(e))
