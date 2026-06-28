@@ -33,14 +33,14 @@ def check_setup(symbol):
 @app.route("/webhook", methods=["POST"])
 def webhook():
     data = request.get_json(force=True)
-    print("Incoming:", data)
 
-    send_telegram(f"RAW DATA: {data}")
+    stocks = data.get("stocks")
 
-    symbol = data.get("stocks")   # important
+    if stocks:
+        stock_list = [s.strip() for s in stocks.split(",")]
 
-    if symbol:
-        send_telegram(f"Stock received: {symbol}")
+        for symbol in stock_list:
+            check_setup(symbol)
 
     return {"status": "ok"}
 if __name__ == "__main__":
