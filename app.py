@@ -14,7 +14,7 @@ CHAT_ID = "-1002632083710"
 def send_telegram(msg):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
 
-    response = requests.post(url, json={
+    response = requests.post(url, data={
         "chat_id": CHAT_ID,
         "text": msg
     })
@@ -23,9 +23,7 @@ def send_telegram(msg):
     print("STATUS:", response.status_code)
     print("BODY:", response.text)
 
-    print("SENDING:", msg)
-    print("STATUS:", response.status_code)
-    print("BODY:", response.text)
+  
 
 def check_setup(symbol):
     print("CHECK_SETUP HIT:", symbol)
