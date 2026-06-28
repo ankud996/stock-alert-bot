@@ -41,7 +41,14 @@ def webhook():
 
         for symbol in stock_list:
             check_setup(symbol)
+stocks = data.get("stocks")
 
+if stocks:
+    stock_list = [s.strip() for s in stocks.split(",")]
+
+    for symbol in stock_list:
+        send_telegram(f"Checking: {symbol}")
+        check_setup(symbol)
     return {"status": "ok"}
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
