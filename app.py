@@ -32,24 +32,16 @@ def check_setup(symbol):
        
 @app.route("/webhook", methods=["POST"])
 def webhook():
-    data = request.json
+    data = request.get_json(force=True)
     print("Incoming:", data)
 
-    symbol = data.get("stock") or data.get("stocks") or data.get("symbol")
+    symbol = data.get("stock")
 
     if symbol:
         send_telegram(f"Stock received: {symbol}")
-
-        try:
-            check_setup(symbol)
-        except Exception as e:
-            send_telegram(f"Check failed: {str(e)}")
-
-    else:
-        send_telegram("No symbol found")
+        check_setup(symbol)
 
     return {"status": "ok"}
-    
 
 
 if __name__ == "__main__":
