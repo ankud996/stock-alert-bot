@@ -102,7 +102,7 @@ def webhook():
 
 @app.route("/")
 def home():
-    return "Bot is running"
+     return "NEW VERSION LIVE"
 
 
 if __name__ == "__main__":
