@@ -27,8 +27,7 @@ def send_telegram(msg):
 
 def check_setup(symbol):
     print("CHECK_SETUP HIT:", symbol)
-    send_telegram(f"Direct test: {symbol}")
-    return
+   
        
 @app.route("/webhook", methods=["POST"])
 def webhook():
@@ -43,12 +42,6 @@ def webhook():
             check_setup(symbol)
 stocks = data.get("stocks")
 
-if stocks:
-    stock_list = [s.strip() for s in stocks.split(",")]
-
-    for symbol in stock_list:
-        send_telegram(f"Checking: {symbol}")
-        check_setup(symbol)
     return {"status": "ok"}
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
