@@ -87,7 +87,6 @@ Volume: Strong
 
 
 @app.route("/webhook", methods=["POST"])
-@app.route("/webhook", methods=["POST"])
 def webhook():
     data = request.json
 
@@ -98,7 +97,7 @@ def webhook():
 
     if symbol:
         send_telegram(f"Webhook hit: {symbol}")
-        check_setup(symbol)
+    
     else:
         send_telegram("No symbol found in payload")
 
