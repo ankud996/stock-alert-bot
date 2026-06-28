@@ -27,7 +27,7 @@ def send_telegram(msg):
 
 def check_setup(symbol):
     print("CHECK_SETUP HIT:", symbol)
-   
+   send_telegram(f"Ankita: {symbol}")
        
 @app.route("/webhook", methods=["POST"])
 def webhook():
@@ -40,7 +40,7 @@ def webhook():
 
         for symbol in stock_list:
             check_setup(symbol)
-stocks = data.get("stocks")
+
 
     return {"status": "ok"}
 if __name__ == "__main__":
