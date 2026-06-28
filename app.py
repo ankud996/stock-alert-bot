@@ -23,6 +23,10 @@ def send_telegram(msg):
     print("STATUS:", response.status_code)
     print("BODY:", response.text)
 
+    print("SENDING:", msg)
+    print("STATUS:", response.status_code)
+    print("BODY:", response.text)
+
 def check_setup(symbol):
     print("CHECK_SETUP HIT:", symbol)
     send_telegram(f"Direct test: {symbol}")
