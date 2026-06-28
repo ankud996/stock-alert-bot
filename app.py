@@ -89,6 +89,7 @@ def webhook():
     symbol = data.get("stock")
 
     if symbol:
+        print("webhook received:",symbol)
         send_telegram(f"Webhook hit: {symbol}")
         check_setup(symbol)
 
