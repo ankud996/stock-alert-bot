@@ -83,6 +83,7 @@ Volume: Strong
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
+    send_telegram("test from Render")
     data = request.json
     symbol = data.get("stock")
 
