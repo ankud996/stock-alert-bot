@@ -24,15 +24,9 @@ def send_telegram(msg):
     print("BODY:", response.text)
 
 def check_setup(symbol):
-    try:
-        time:sleep(2)
-        df = yf.download(
-            tickers=symbol + ".NS",
-            interval="15m",
-            period="5d",
-            auto_adjust=False,
-            progress=False
-        )
+    print("CHECK_SETUP HIT:", symbol)
+    send_telegram(f"Direct test: {symbol}")
+    return
 
         if df.empty:
             send_telegram(f"No data for {symbol}")
