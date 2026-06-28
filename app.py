@@ -27,7 +27,6 @@ def check_setup(symbol):
     print("CHECK_SETUP HIT:", symbol)
     send_telegram(f"Direct test: {symbol}")
     return
-
         if df.empty:
             send_telegram(f"No data for {symbol}")
             return
