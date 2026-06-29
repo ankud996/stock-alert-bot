@@ -93,7 +93,7 @@ def check_setup(symbol):
 """
     send_telegram(msg)
     @app.route("/webhook", methods=["POST"])
-    def webhook():
+def webhook():
     data = request.get_json(force=True)
 
     stocks = data.get("stocks")
@@ -103,7 +103,6 @@ def check_setup(symbol):
 
         for symbol in stock_list:
             check_setup(symbol)
-
 
     return {"status": "ok"}
 if __name__ == "__main__":
