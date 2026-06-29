@@ -43,9 +43,9 @@ def check_setup(symbol):
     # Indicators
     close = df["Close"].squeeze()
 
-df["EMA9"] = EMAIndicator(close, window=9).ema_indicator()
-df["EMA21"] = EMAIndicator(close, window=21).ema_indicator()
-df["RSI"] = RSIIndicator(close).rsi()
+    df["EMA9"] = EMAIndicator(close, window=9).ema_indicator()
+    df["EMA21"] = EMAIndicator(close, window=21).ema_indicator()
+    df["RSI"] = RSIIndicator(close).rsi()
 
     # VWAP
     df["TP"] = (df["High"] + df["Low"] + df["Close"]) / 3
