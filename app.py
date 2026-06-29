@@ -53,14 +53,16 @@ def check_setup(symbol):
 
     latest = df.iloc[-2]
 
-# Today's first candle
-today_df = df[df.index.date == df.index[-1].date()]
+    # Today's first candle
+    today_df = df[df.index.date == df.index[-1].date()]
 
-if today_df.empty:
-    send_telegram(f"No intraday data for {symbol}")
-    return
+    if today_df.empty:
+        send_telegram(f"No intraday data for {symbol}")
+        return
 
-first_candle_high = today_df.iloc[0]["High"]    # Logic
+    first_candle_high = today_df.iloc[0]["High"]
+
+    # Logic
     breakout = latest["Close"] > first_candle_high
     ema_above_vwap = latest["EMA9"] > latest["VWAP"]
 
@@ -72,7 +74,7 @@ first_candle_high = today_df.iloc[0]["High"]    # Logic
 💰 Price: {round(latest['Close'],2)}
 
 📊 Volume: {round(latest['Volume']/100000,2)}L
-📈 Avg Vol: {round(latest['AvgVol']/100000,2)}L
+📉 Avg Vol: {round(latest['AvgVol']/100000,2)}L
 📌 Vol vs Avg: {round(vol_percent,2)}%
 
 ⚡ RSI: {round(latest['RSI'],2)}
@@ -89,8 +91,7 @@ first_candle_high = today_df.iloc[0]["High"]    # Logic
 
 🎯 Setup Valid: {"YES 🚀" if breakout and ema_above_vwap else "WAIT ⏳"}
 """
-    send_telegram(msg)       
-@app.route("/webhook", methods=["POST"])
+    send_telegram(msg)@app.route("/webhook", methods=["POST"])
 def webhook():
     data = request.get_json(force=True)
 
