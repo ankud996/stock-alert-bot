@@ -93,7 +93,7 @@ df["RSI"] = RSIIndicator(close).rsi()
 
 🎯 Setup Valid: {"YES 🚀" if breakout and ema_above_vwap else "WAIT ⏳"}
 """
-    send_telegram(msg)
+send_telegram(msg)
 @app.route("/webhook", methods=["POST"])
 def webhook():
     data = request.get_json(force=True)
