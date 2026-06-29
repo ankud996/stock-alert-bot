@@ -72,6 +72,7 @@ def check_setup(symbol):
     vol_percent = ((latest["Volume"] - latest["AvgVol"]) / latest["AvgVol"]) * 100
 
     msg = f"""
+🔥 Ankita Trade Setup 🔥
 🚨 {symbol}
 
 💰 Price: {round(latest['Close'],2)}
