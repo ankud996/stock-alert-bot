@@ -49,7 +49,8 @@ def check_setup(symbol):
 
     # VWAP
     df["TP"] = (df["High"] + df["Low"] + df["Close"]) / 3
-    df["VWAP"] = (df["TP"] * df["Volume"]).cumsum() / df["Volume"].cumsum()
+    volume = df["Volume"].squeeze()
+    df["VWAP"] = (df["TP"] * volume).cumsum() / volume.cumsum()
     # Avg Volume
     df["AvgVol"] = df["Volume"].rolling(20).mean()
 
