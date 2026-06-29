@@ -25,13 +25,15 @@ def send_telegram(msg):
 
   
 def check_setup(symbol):
-    symbol = symbol.strip()
+    symbol = symbol.strip().upper()
+    symbol = symbol.replace("&", "%26")
 
     df = yf.download(
         f"{symbol}.NS",
         period="2d",
         interval="15m",
-        auto_adjust=True
+        auto_adjust=True,
+        progress=False
     )
 
     if df.empty:
