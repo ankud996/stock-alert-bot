@@ -26,6 +26,9 @@ def send_telegram(msg):
   
 def check_setup(symbol):
     symbol = symbol.strip().upper()
+    symbol = symbol.replace("NSE:", "").replace("-EQ", "")
+
+    send_telegram(f"Checking: {symbol}")   # debug
 
     df = yf.download(
         f"{symbol}.NS",
