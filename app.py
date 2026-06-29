@@ -93,7 +93,7 @@ def check_setup(symbol):
 """
     send_telegram(msg)
     @app.route("/webhook", methods=["POST"])
-def webhook():
+    def webhook():
     data = request.get_json(force=True)
 
     stocks = data.get("stocks")
