@@ -28,7 +28,7 @@ def check_setup(symbol):
     symbol = symbol.strip()
 
     df = yf.download(
-        symbol,
+        f"{symbol}.NS",
         period="2d",
         interval="15m",
         auto_adjust=True
@@ -52,9 +52,13 @@ def check_setup(symbol):
     latest = df.iloc[-2]
 
     # Today's first candle
-    today_df = df[df.index.date == df.index[-1].date()]
-    first_candle_high = today_df.iloc[0]["High"]
+   today_df = df[df.index.date == df.index[-1].date()]
 
+if today_df.empty:
+    send_telegram(f"No intraday data for {symbol}")
+    return
+
+first_candle_high = today_df.iloc[0]["High"]
     # Logic
     breakout = latest["Close"] > first_candle_high
     ema_above_vwap = latest["EMA9"] > latest["VWAP"]
