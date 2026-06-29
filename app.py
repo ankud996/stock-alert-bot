@@ -25,9 +25,17 @@ def send_telegram(msg):
 
   
 def check_setup(symbol):
-    df = yf.download(symbol + ".NS", interval="15m", period="2d")
+    symbol = symbol.strip().upper()
+
+    df = yf.download(
+        f"{symbol}.NS",
+        period="2d",
+        interval="15m",
+        auto_adjust=True
+    )
 
     if df.empty:
+        send_telegram(f"No data for {symbol}")
         return
 
     # Indicators
@@ -36,12 +44,12 @@ def check_setup(symbol):
     df["RSI"] = RSIIndicator(df["Close"]).rsi()
 
     # VWAP
-    df["VWAP"] = (df["Close"] * df["Volume"]).cumsum() / df["Volume"].cumsum()
-
+    df["TP"] = (df["High"] + df["Low"] + df["Close"]) / 3
+    df["VWAP"] = (df["TP"] * df["Volume"]).cumsum() / df["Volume"].cumsum()
     # Avg Volume
     df["AvgVol"] = df["Volume"].rolling(20).mean()
 
-    latest = df.iloc[-1]
+    latest = df.iloc[-2]
 
     # Today's first candle
     today_df = df[df.index.date == df.index[-1].date()]
