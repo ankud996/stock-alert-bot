@@ -25,57 +25,58 @@ def send_telegram(msg):
 
   
 def check_setup(symbol):
-    print("CHECK_SETUP HIT:", symbol)
-
-    df = yf.download(symbol + ".NS", period="1d", interval="5m")
+    df = yf.download(symbol + ".NS", interval="15m", period="2d")
 
     if df.empty:
-        send_telegram(f"No data for {symbol}")
         return
 
-    if isinstance(df.columns, pd.MultiIndex):
-        df.columns = df.columns.get_level_values(0)
-
     # Indicators
-    df["EMA9"] = EMAIndicator(df["Close"], 9).ema_indicator()
-    df["EMA21"] = EMAIndicator(df["Close"], 21).ema_indicator()
-    df["RSI"] = RSIIndicator(df["Close"], 14).rsi()
+    df["EMA9"] = EMAIndicator(df["Close"], window=9).ema_indicator()
+    df["EMA21"] = EMAIndicator(df["Close"], window=21).ema_indicator()
+    df["RSI"] = RSIIndicator(df["Close"]).rsi()
 
     # VWAP
-    df["VWAP"] = (
-        (df["Volume"] * ((df["High"] + df["Low"] + df["Close"]) / 3)).cumsum()
-        / df["Volume"].cumsum()
-    )
+    df["VWAP"] = (df["Close"] * df["Volume"]).cumsum() / df["Volume"].cumsum()
 
-    # Average Volume
+    # Avg Volume
     df["AvgVol"] = df["Volume"].rolling(20).mean()
 
     latest = df.iloc[-1]
 
-    # Volume difference %
-    vol_diff = ((latest["Volume"] - latest["AvgVol"]) / latest["AvgVol"]) * 100
+    # Today's first candle
+    today_df = df[df.index.date == df.index[-1].date()]
+    first_candle_high = today_df.iloc[0]["High"]
 
-    # Resistance = last 10 candles high
-    resistance = df["High"].tail(10).max()
+    # Logic
+    breakout = latest["Close"] > first_candle_high
+    ema_above_vwap = latest["EMA9"] > latest["VWAP"]
 
-    # Support = last 10 candles low
-    support = df["Low"].tail(10).min()
+    vol_percent = ((latest["Volume"] - latest["AvgVol"]) / latest["AvgVol"]) * 100
 
     msg = f"""
 🚨 {symbol}
 
 💰 Price: {round(latest['Close'],2)}
-📊 Volume: {round(latest['Volume']/100000,2)}L ({round(vol_diff,2)}% vs avg)
+
+📊 Volume: {round(latest['Volume']/100000,2)}L
+📈 Avg Vol: {round(latest['AvgVol']/100000,2)}L
+📌 Vol vs Avg: {round(vol_percent,2)}%
+
 ⚡ RSI: {round(latest['RSI'],2)}
-📍 VWAP: {round(latest['VWAP'],2)}
+
+🔥 First 15m Breakout: {"YES ✅" if breakout else "NO ❌"}
+📍 EMA9 > VWAP: {"YES ✅" if ema_above_vwap else "NO ❌"}
+
+📊 VWAP: {round(latest['VWAP'],2)}
 📈 EMA9: {round(latest['EMA9'],2)}
 📉 EMA21: {round(latest['EMA21'],2)}
-🟢 Resistance: {round(resistance,2)}
-🔴 Support: {round(support,2)}
-"""
 
-    send_telegram(msg)
-       
+🟢 Resistance: {round(latest['High'],2)}
+🔴 Support: {round(latest['Low'],2)}
+
+🎯 Setup Valid: {"YES 🚀" if breakout and ema_above_vwap else "WAIT ⏳"}
+"""
+    send_telegram(msg)       
 @app.route("/webhook", methods=["POST"])
 def webhook():
     data = request.get_json(force=True)
