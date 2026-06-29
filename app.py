@@ -66,9 +66,9 @@ def check_setup(symbol):
     first_candle_high = today_df.iloc[0]["High"]
 
     # Logic
-    breakout = float(latest["Close"]) > float(first_candle_high)
-    ema_above_vwap = float(latest["EMA9"]) > float(latest["VWAP"])
-
+    breakout = latest["Close"].item() > first_candle_high.item()
+    ema_above_vwap = latest["EMA9"].item() > latest["VWAP"].item()
+    
     vol_percent = ((latest["Volume"] - latest["AvgVol"]) / latest["AvgVol"]) * 100
 
     msg = f"""
