@@ -67,7 +67,7 @@ def check_setup(symbol):
             send_telegram(f"⚠ No intraday data for {symbol}")
             return
 
-        first_candle_high = today_df.iloc[0]["High"]
+        first_candle_high = float(today_df.iloc[0]["High"])
 
         # Logic
         breakout = latest["Close"] > first_candle_high
