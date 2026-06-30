@@ -24,7 +24,7 @@ def send_telegram(msg):
     print("BODY:", response.text)
 
 
-def check_setup(symbol):
+def check_setup(symbol, scanner name):
     symbol = symbol.strip().upper()
 
     try:
@@ -79,6 +79,8 @@ def check_setup(symbol):
 
         msg = f"""
 🔥 Ankita Trade Setup 🔥
+📡 Scanner: {scanner_name}
+
 🚨 {symbol}
 
 💰 Price: {round(float(latest['Close']), 2)}
@@ -113,12 +115,13 @@ def webhook():
     data = request.get_json(force=True)
 
     stocks = data.get("stocks")
+    scanner_name= data.get("scan_name","unknown scanner")
 
     if stocks:
         stock_list = [s.strip() for s in stocks.split(",")]
 
         for symbol in stock_list:
-            check_setup(symbol)
+            check_setup(symbol, scanner_name)
 
     return {"status": "ok"}
 
