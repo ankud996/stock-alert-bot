@@ -20,12 +20,8 @@ def send_telegram(msg):
     })
 
 
-def check_setup(symbol, scanner_name="Unknown Scanner"):
+def check_setup(symbol):
     symbol = symbol.strip().upper()
-
-    # Ignore Chartink test symbols
-    if symbol in ["SYMBOL 1", "SYMBOL 2", "SYMBOL 3"]:
-        return
 
     try:
         df = yf.download(
@@ -40,7 +36,7 @@ def check_setup(symbol, scanner_name="Unknown Scanner"):
             send_telegram(f"❌ No data for {symbol}")
             return
 
-        # Convert to series
+        # Single series
         close = df["Close"].squeeze()
         high = df["High"].squeeze()
         low = df["Low"].squeeze()
@@ -58,64 +54,39 @@ def check_setup(symbol, scanner_name="Unknown Scanner"):
         # Avg Volume
         df["AvgVol"] = volume.rolling(20).mean()
 
-        # Last valid candle (volume > 0)
-        valid_df = df[df["Volume"] > 0]
+        latest = df.iloc[-2]
 
-        if valid_df.empty:
-            send_telegram(f"❌ No valid volume data for {symbol}")
-            return
+        # Volume fix
+        current_vol = float(latest["Volume"])
+        avg_vol = float(latest["AvgVol"]) if latest["AvgVol"] > 0 else 0
 
-        latest = valid_df.iloc[-1].squeeze()
-
-        # Today's data
-        today_df = valid_df[valid_df.index.date == valid_df.index[-1].date()]
-
-        if today_df.empty:
-            send_telegram(f"⚠ No intraday data for {symbol}")
-            return
-
-        first_candle_high = today_df.iloc[0]["High"].item()
-
-        # Logic
-        breakout = latest["Close"].item() > first_candle_high
-        ema_above_vwap = latest["EMA9"].item() > latest["VWAP"].item()
-
-        if latest["AvgVol"] == 0:
+        if avg_vol == 0:
             vol_percent = 0
         else:
-            vol_percent = ((latest["Volume"] - latest["AvgVol"]) / latest["AvgVol"]) * 100
+            vol_percent = ((current_vol - avg_vol) / avg_vol) * 100
 
         msg = f"""
-🔥 Ankita Trade Setup 🔥
-📡 Scanner: {scanner_name}
-
 🚨 {symbol}
 
 💰 Price: {round(float(latest['Close']), 2)}
 
-📊 Volume: {round(float(latest['Volume']) / 100000, 2)}L
-📉 Avg Vol: {round(float(latest['AvgVol']) / 100000, 2)}L
-📌 Vol vs Avg: {round(float(vol_percent), 2)}%
+📊 Volume: {round(current_vol / 100000, 2)}L
+📉 Avg Vol: {round(avg_vol / 100000, 2)}L
+📌 Vol vs Avg: {round(vol_percent, 2)}%
 
 ⚡ RSI: {round(float(latest['RSI']), 2)}
 
-🔥 First 15m Breakout: {"YES ✅" if breakout else "NO ❌"}
-📍 EMA9 > VWAP: {"YES ✅" if ema_above_vwap else "NO ❌"}
-
-📊 VWAP: {round(float(latest['VWAP']), 2)}
+📍 VWAP: {round(float(latest['VWAP']), 2)}
 📈 EMA9: {round(float(latest['EMA9']), 2)}
 📉 EMA21: {round(float(latest['EMA21']), 2)}
 
 🟢 Resistance: {round(float(latest['High']), 2)}
 🔴 Support: {round(float(latest['Low']), 2)}
-
-🎯 Setup Valid: {"YES 🚀" if breakout and ema_above_vwap else "WAIT ⏳"}
 """
-
         send_telegram(msg)
 
     except Exception as e:
-        send_telegram(f"⚠ Error in {symbol}: {str(e)}")
+        send_telegram(f"⚠️ Error in {symbol}: {str(e)}")
 
 
 @app.route("/webhook", methods=["POST"])
@@ -123,16 +94,12 @@ def webhook():
     data = request.get_json(force=True)
 
     stocks = data.get("stocks")
-    scanner_name = data.get("scan_name", "Unknown Scanner")
-    print("DATA RECEIVED:", data)
-    print("STOCKS:", stocks)
-    print("SCANNER:", scanner_name)
 
     if stocks:
         stock_list = [s.strip() for s in stocks.split(",")]
 
         for symbol in stock_list:
-            check_setup(symbol, scanner_name)
+            check_setup(symbol)
 
     return {"status": "ok"}
 
