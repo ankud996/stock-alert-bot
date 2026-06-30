@@ -14,18 +14,18 @@ CHAT_ID = "1249990076"
 def send_telegram(msg):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
 
-    response = requests.post(url, data={
+    requests.post(url, data={
         "chat_id": CHAT_ID,
         "text": msg
     })
 
-    print("SENDING:", msg)
-    print("STATUS:", response.status_code)
-    print("BODY:", response.text)
 
-
-def check_setup(symbol, scanner_name):
+def check_setup(symbol, scanner_name="Unknown Scanner"):
     symbol = symbol.strip().upper()
+
+    # Ignore Chartink test symbols
+    if symbol in ["SYMBOL 1", "SYMBOL 2", "SYMBOL 3"]:
+        return
 
     try:
         df = yf.download(
@@ -40,7 +40,7 @@ def check_setup(symbol, scanner_name):
             send_telegram(f"❌ No data for {symbol}")
             return
 
-        # Convert columns to single series
+        # Convert to series
         close = df["Close"].squeeze()
         high = df["High"].squeeze()
         low = df["Low"].squeeze()
@@ -58,9 +58,17 @@ def check_setup(symbol, scanner_name):
         # Avg Volume
         df["AvgVol"] = volume.rolling(20).mean()
 
-        latest = df.iloc[-2].squeeze()
+        # Last valid candle (volume > 0)
+        valid_df = df[df["Volume"] > 0]
+
+        if valid_df.empty:
+            send_telegram(f"❌ No valid volume data for {symbol}")
+            return
+
+        latest = valid_df.iloc[-1].squeeze()
+
         # Today's data
-        today_df = df[df.index.date == df.index[-1].date()]
+        today_df = valid_df[valid_df.index.date == valid_df.index[-1].date()]
 
         if today_df.empty:
             send_telegram(f"⚠ No intraday data for {symbol}")
@@ -69,7 +77,7 @@ def check_setup(symbol, scanner_name):
         first_candle_high = today_df.iloc[0]["High"].item()
 
         # Logic
-        breakout = latest["Close"] > first_candle_high
+        breakout = latest["Close"].item() > first_candle_high
         ema_above_vwap = latest["EMA9"].item() > latest["VWAP"].item()
 
         if latest["AvgVol"] == 0:
@@ -115,7 +123,7 @@ def webhook():
     data = request.get_json(force=True)
 
     stocks = data.get("stocks")
-    scanner_name= data.get("scan_name","unknown scanner")
+    scanner_name = data.get("scan_name", "Unknown Scanner")
 
     if stocks:
         stock_list = [s.strip() for s in stocks.split(",")]
