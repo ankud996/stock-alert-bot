@@ -70,7 +70,7 @@ def check_setup(symbol, scanner_name):
 
         # Logic
         breakout = latest["Close"] > first_candle_high
-        ema_above_vwap = latest["EMA9"].item() > latest["VWAP"]
+        ema_above_vwap = latest["EMA9"].item() > latest["VWAP"].item()
 
         if latest["AvgVol"] == 0:
             vol_percent = 0
