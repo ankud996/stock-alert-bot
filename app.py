@@ -58,8 +58,7 @@ def check_setup(symbol):
         # Avg Volume
         df["AvgVol"] = volume.rolling(20).mean()
 
-        latest = df.iloc[-2]
-
+        latest = df.iloc[-2].squeeze()
         # Today's data
         today_df = df[df.index.date == df.index[-1].date()]
 
@@ -67,7 +66,7 @@ def check_setup(symbol):
             send_telegram(f"⚠ No intraday data for {symbol}")
             return
 
-        first_candle_high = float(today_df.iloc[0]["High"])
+        first_candle_high = today_df.iloc[0]["High"].item()
 
         # Logic
         breakout = latest["Close"] > first_candle_high
