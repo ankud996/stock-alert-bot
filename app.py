@@ -50,7 +50,7 @@ def check_setup(symbol):
     # Average Volume
     df["AvgVol"] = df["Volume"].rolling(20).mean()
 
-    latest = df.iloc[-1]
+    latest = df.iloc[-2]
 
     # Volume difference %
     vol_diff = ((latest["Volume"] - latest["AvgVol"]) / latest["AvgVol"]) * 100
