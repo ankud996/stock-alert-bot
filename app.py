@@ -124,6 +124,9 @@ def webhook():
 
     stocks = data.get("stocks")
     scanner_name = data.get("scan_name", "Unknown Scanner")
+    print("DATA RECEIVED:", data)
+    print("STOCKS:", stocks)
+    print("SCANNER:", scanner_name)
 
     if stocks:
         stock_list = [s.strip() for s in stocks.split(",")]
