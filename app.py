@@ -24,7 +24,7 @@ def send_telegram(msg):
     print("BODY:", response.text)
 
 
-def check_setup(symbol, scanner name):
+def check_setup(symbol, scanner_name):
     symbol = symbol.strip().upper()
 
     try:
