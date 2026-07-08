@@ -24,7 +24,7 @@ def send_telegram(msg):
     print("BODY:", response.text)
 
   
-def check_setup(symbol, scanner name):
+def check_setup(symbol, scanner_name):
     print("CHECK_SETUP HIT:", symbol)
 
     df = yf.download(symbol + ".NS", period="1d", interval="5m")
