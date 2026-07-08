@@ -24,7 +24,7 @@ def send_telegram(msg):
     print("BODY:", response.text)
 
   
-def check_setup(symbol):
+def check_setup(symbol, scanner name):
     print("CHECK_SETUP HIT:", symbol)
 
     df = yf.download(symbol + ".NS", period="1d", interval="5m")
@@ -62,6 +62,9 @@ def check_setup(symbol):
     support = df["Low"].tail(10).min()
 
     msg = f"""
+    📡 Scanner: {scanner_name}
+    ━━━━━━━━━━━━━━
+
 🚨 {symbol}
 
 💰 Price: {round(latest['Close'],2)}
@@ -80,12 +83,13 @@ def webhook():
     data = request.get_json(force=True)
 
     stocks = data.get("stocks")
+    scanner_name = data.get("scan_name", "unknown scanner")
 
     if stocks:
         stock_list = [s.strip() for s in stocks.split(",")]
 
         for symbol in stock_list:
-            check_setup(symbol)
+            check_setup(symbol, scanner_name)
 
     return {"status": "ok"}
 if __name__ == "__main__":
