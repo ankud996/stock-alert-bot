@@ -51,6 +51,10 @@ def check_setup(symbol, scanner_name):
     df["AvgVol"] = df["Volume"].rolling(20).mean()
 
     latest = df.iloc[-2]
+    
+    # Today's Move %
+    day_open = df.iloc[0]["Open"]
+    today_move = ((latest["Close"] - day_open) / day_open) * 100
 
     # Volume difference %
     vol_diff = ((latest["Volume"] - latest["AvgVol"]) / latest["AvgVol"]) * 100
@@ -68,11 +72,16 @@ def check_setup(symbol, scanner_name):
 🚨 {symbol}
 
 💰 Price: {round(latest['Close'],2)}
+📈 Today's Move: {round(today_move,2)}%
+
 📊 Volume: {round(latest['Volume']/100000,2)}L ({round(vol_diff,2)}% vs avg)
 ⚡ RSI: {round(latest['RSI'],2)}
+
 📍 VWAP: {round(latest['VWAP'],2)}
 📈 EMA9: {round(latest['EMA9'],2)}
+
 📉 EMA21: {round(latest['EMA21'],2)}
+
 🟢 Resistance: {round(resistance,2)}
 🔴 Support: {round(support,2)}
 """
